@@ -1,0 +1,201 @@
+/* 🌍 GLOBAL */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background: #f5f7fb;
+    color: #333;
+}
+
+h2, h3 {
+    margin-bottom: 10px;
+}
+
+button {
+    background: #4f46e5;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #4338ca;
+}
+
+input, select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+/* 📦 CONTAINER */
+#app, #loginSection {
+    padding: 20px;
+    max-width: 1100px;
+    margin: auto;
+}
+
+/* 🔐 LOGIN CARD */
+#loginSection {
+    max-width: 350px;
+    margin-top: 100px;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+/* 🔝 NAVBAR */
+nav {
+    background: #111827;
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* LEFT NAV */
+.nav-left {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.nav-left button {
+    background: #1f2937;
+}
+
+.nav-left button:hover {
+    background: #374151;
+}
+
+/* RIGHT NAV */
+.nav-right button {
+    background: #ef4444;
+}
+
+/* 🏠 CARD UI */
+#home, #profile, #history, #invites, #suggestions, #friends {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+/* 📊 TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    overflow-x: auto;
+}
+
+th {
+    background: #4f46e5;
+    color: white;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+tr:nth-child(even) {
+    background: #f3f4f6;
+}
+
+/* 📱 RESPONSIVE TABLE */
+@media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    tr {
+        margin-bottom: 10px;
+        background: white;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    td {
+        text-align: left;
+        padding: 5px;
+    }
+
+    th {
+        display: none;
+    }
+}
+
+/* 🤝 FRIENDS + CHAT */
+#friends > div {
+    display: flex;
+    gap: 10px;
+    height: 450px;
+}
+
+/* LEFT PANEL */
+#friendsList {
+    list-style: none;
+    padding: 0;
+}
+
+#friendsList li {
+    background: #f3f4f6;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* RIGHT CHAT */
+#chatBox {
+    background: #f9fafb;
+    border-radius: 6px;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+/* CHAT BUBBLES */
+.chat-me {
+    text-align: right;
+    margin: 5px 0;
+}
+
+.chat-me span {
+    background: #4f46e5;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.chat-other {
+    text-align: left;
+    margin: 5px 0;
+}
+
+.chat-other span {
+    background: #e5e7eb;
+    padding: 6px 10px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+/* 📱 MOBILE CHAT */
+@media (max-width: 768px) {
+    #friends > div {
+        flex-direction: column;
+        height: auto;
+    }
+}
