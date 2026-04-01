@@ -1,5 +1,5 @@
 // ================= CONFIG =================
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://projectno1-1.onrender.com";
 
 // ================= STATE =================
 let user_id = Number(localStorage.getItem("user_id")) || null;
