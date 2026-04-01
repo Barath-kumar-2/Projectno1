@@ -9,7 +9,7 @@ const PORT = 5000;
 const CLIENT_ID = "1025485618680-2tthbngduvs4s60vbon7ilqvsrtdfr7n.apps.googleusercontent.com";
 const client = new OAuth2Client(CLIENT_ID);
 
-app.use(cors({ origin: "http://127.0.0.1:5500" }));
+app.use(cors());
 app.use(express.json());
 
 /* ================= GOOGLE LOGIN ================= */
