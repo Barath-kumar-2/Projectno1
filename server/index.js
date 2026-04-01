@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const supabase = require("./supabaseClient");
+const supabase = require("./db");
 const { OAuth2Client } = require("google-auth-library");
 
 const app = express();
