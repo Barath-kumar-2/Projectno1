@@ -531,16 +531,24 @@ async function loadNotifications() {
         }
 
         data.notifications.forEach(n => {
-            const li = document.createElement("li");
-            li.className = `p-2 border-bottom ${!n.is_read ? "bg-light" : ""}`;
-            li.style.fontSize = "13px";
-            li.innerHTML = `
-                <i class="fa fa-${n.type === 'ride_request' ? 'paper-plane text-success' : n.type === 'ride_accepted' ? 'check text-primary' : 'times text-danger'} me-2"></i>
-                ${n.message}
-                <br><small class="text-muted">${formatTime(n.created_at)}</small>
-            `;
-            list.appendChild(li);
-        });
+    const li = document.createElement("li");
+    li.className = `border-bottom ${!n.is_read ? "bg-light" : ""}`;
+    li.style.fontSize = "13px";
+    li.style.lineHeight = "1.5";
+    li.style.whiteSpace = "normal";
+    li.style.wordBreak = "break-word";
+    li.style.padding = "10px 12px";
+    li.innerHTML = `
+        <div class="d-flex align-items-start gap-2">
+            <i class="fa fa-${n.type === 'ride_request' ? 'paper-plane text-success' : n.type === 'ride_accepted' ? 'check text-primary' : 'times text-danger'} mt-1"></i>
+            <div>
+                <div>${n.message}</div>
+                <small class="text-muted">${formatTime(n.created_at)}</small>
+            </div>
+        </div>
+    `;
+    list.appendChild(li);
+});
 
         // Also update request badge
         loadRequestBadge();
