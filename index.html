@@ -3,257 +3,269 @@
 <head>
     <title>VIT Rickmate</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Google Identity -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="bg-light">
 
 <!-- ================= LOGIN ================= -->
-
 <div id="loginSection" class="d-flex justify-content-center align-items-center vh-100">
-    <div class="card p-4 shadow text-center" style="width:350px;">
-        <h3 class="mb-3">🚕 Rickmate</h3>
-        <p class="text-muted">Sign in to continue</p>
-
-        <!-- Google Button -->
+    <div class="card p-4 shadow text-center login-card">
+        <div class="login-logo">🚕</div>
+        <h3 class="mb-1">Rickmate</h3>
+        <p class="text-muted mb-4">Share rides with your VIT buddies</p>
         <div id="g_id_onload"
              data-client_id="1025485618680-2tthbngduvs4s60vbon7ilqvsrtdfr7n.apps.googleusercontent.com"
              data-callback="handleCredentialResponse">
         </div>
-
-        <div class="g_id_signin"></div>
+        <div class="g_id_signin d-flex justify-content-center"></div>
+        <p class="text-muted mt-3" style="font-size:12px;">Only VIT Google accounts allowed</p>
     </div>
 </div>
 
 <!-- ================= APP ================= -->
-
 <div id="app" style="display:none;">
 
-<!-- NAVBAR -->
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
     <div class="container-fluid">
-        <a class="navbar-brand">🚕 Rickmate</a>
+        <a class="navbar-brand fw-bold">🚕 Rickmate</a>
 
-        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="d-flex align-items-center gap-2 ms-auto">
 
-        <div id="nav" class="collapse navbar-collapse">
-            <div class="navbar-nav me-auto">
-                <button class="btn btn-link text-white" onclick="showSection('home')">Home</button>
-                <button class="btn btn-link text-white" onclick="showSection('current'); loadCurrentRides()">Current Rides</button>
-                <button class="btn btn-link text-white" onclick="showSection('suggestions'); loadSuggestions()">Suggestions</button>
-                <button class="btn btn-link text-white" onclick="showSection('invites'); loadInvites()">Invitations</button>
-                <button class="btn btn-link text-white" onclick="showSection('friends'); loadFriends()">Friends</button>
-                <button class="btn btn-link text-white" onclick="showSection('profile'); loadProfile()">Profile</button>
-                <button class="btn btn-link text-white" onclick="showSection('history'); loadHistory()">Ride History</button>
+            <!-- Notification Bell -->
+            <div class="position-relative me-2" id="bellContainer">
+                <button class="btn btn-link text-white p-0" onclick="toggleNotifications()">
+                    <i class="fa fa-bell fa-lg"></i>
+                    <span id="bellBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none;font-size:10px;">0</span>
+                </button>
+
+                <!-- Notification Dropdown -->
+                <div id="notifDropdown" class="notification-dropdown shadow" style="display:none;">
+                    <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
+                        <strong>Notifications</strong>
+                        <button class="btn btn-sm btn-link text-muted" onclick="markAllRead()">Mark all read</button>
+                    </div>
+                    <ul id="notifList" class="list-unstyled mb-0"></ul>
+                </div>
             </div>
 
-            <span class="text-white me-3" id="navUser"></span>
-            <button class="btn btn-danger" onclick="logout()">Logout</button>
+            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+
+        <div id="nav" class="collapse navbar-collapse">
+            <div class="navbar-nav me-auto mt-2 mt-lg-0">
+                <button class="btn btn-link text-white nav-btn" onclick="showSection('home')">
+                    <i class="fa fa-home me-1"></i>Home
+                </button>
+                <button class="btn btn-link text-white nav-btn" onclick="showSection('current')">
+                    <i class="fa fa-car me-1"></i>Current Rides
+                </button>
+                <button class="btn btn-link text-white nav-btn" onclick="showSection('suggestions')">
+                    <i class="fa fa-lightbulb me-1"></i>Suggestions
+                </button>
+                <button class="btn btn-link text-white nav-btn" onclick="showSection('requests')">
+                    <i class="fa fa-paper-plane me-1"></i>Requests
+                    <span id="requestBadge" class="badge bg-danger ms-1" style="display:none;">0</span>
+                </button>
+                <button class="btn btn-link text-white nav-btn" onclick="showSection('friends')">
+                    <i class="fa fa-users me-1"></i>Friends
+                </button>
+                <button class="btn btn-link text-white nav-btn" onclick="showSection('profile')">
+                    <i class="fa fa-user me-1"></i>Profile
+                </button>
+                <button class="btn btn-link text-white nav-btn" onclick="showSection('history')">
+                    <i class="fa fa-history me-1"></i>History
+                </button>
+            </div>
+            <div class="d-flex align-items-center gap-2 mt-2 mt-lg-0">
+                <span class="text-white" id="navUser"></span>
+                <button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+            </div>
         </div>
     </div>
 </nav>
 
-<div class="container mt-4">
+<div class="container mt-4 pb-4">
 
 <!-- ================= HOME ================= -->
-
 <div id="home">
     <div class="card p-4 shadow-sm">
-        <h4 class="mb-3">Post Your Ride 🚕</h4>
+        <h4 class="mb-4"><i class="fa fa-plus-circle text-success me-2"></i>Post Your Ride</h4>
 
-        <div class="row">
-
+        <div class="row g-3">
             <div class="col-md-6">
-                <label>Start Location</label>
+                <label class="form-label fw-semibold">Start Location</label>
                 <select id="start" class="form-select">
                     <option value="">Select Start</option>
-                    <option>VIT Boys Hostel</option>
                     <option>VIT Main Gate</option>
-                    <option>Chittoor Bus Stand</option>
+                    <option>VIT Boys Hostel</option>
                     <option>Katpadi Junction</option>
                     <option>Vellore New Bus Stand</option>
+                    <option>Chittoor Bus Stand</option>
                     <option>Chennai Airport</option>
                     <option>Bengaluru Airport</option>
                 </select>
             </div>
 
             <div class="col-md-6">
-                <label>Destination</label>
+                <label class="form-label fw-semibold">Destination</label>
                 <select id="destination" class="form-select">
                     <option value="">Select Destination</option>
-                    <option>VIT Boys Hostel</option>
                     <option>VIT Main Gate</option>
-                    <option>Chittoor Bus Stand</option>
+                    <option>VIT Boys Hostel</option>
                     <option>Katpadi Junction</option>
                     <option>Vellore New Bus Stand</option>
+                    <option>Chittoor Bus Stand</option>
                     <option>Chennai Airport</option>
                     <option>Bengaluru Airport</option>
                 </select>
             </div>
 
-            <div class="col-md-6 mt-3">
-                <label>Date</label>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Date</label>
                 <input type="date" id="date" class="form-control">
             </div>
 
-            <div class="col-md-6 mt-3">
-                <label>Time</label>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Time</label>
                 <select id="time" class="form-select"></select>
             </div>
 
-            <div class="col-md-6 mt-3">
-                <label>Strictness</label>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Strictness</label>
                 <select id="strictness" class="form-select">
-                    <option value="high">High</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="low">Low</option>
+                    <option value="high">High — Exact time only</option>
+                    <option value="medium" selected>Medium — ±1 hour</option>
+                    <option value="low">Low — Any time that day</option>
                 </select>
             </div>
 
-            <!-- TEAM -->
-            <div class="col-12 mt-4">
-                <h5>Team Members</h5>
+            <div class="col-12">
+                <div class="alert alert-info py-2 mb-0" style="font-size:13px;">
+                    <i class="fa fa-info-circle me-1"></i>
+                    <strong>High</strong> = exact hour match &nbsp;|&nbsp;
+                    <strong>Medium</strong> = within ±1 hour &nbsp;|&nbsp;
+                    <strong>Low</strong> = same day, any time
+                </div>
+            </div>
 
+            <div class="col-12">
+                <hr>
+                <h5>Travel Companions <small class="text-muted fw-normal fs-6">(Optional)</small></h5>
+                <p class="text-muted" style="font-size:13px;">Add people travelling with you who may not be on the app.</p>
                 <div id="teamMembers"></div>
-
-                <button class="btn btn-sm btn-secondary mt-2" onclick="addMemberField()">
-                    + Add Member
+                <button class="btn btn-outline-secondary btn-sm mt-2" onclick="addMemberField()">
+                    <i class="fa fa-plus me-1"></i>Add Companion
                 </button>
-
-                <p class="mt-3">
-                    🚖 Capacity: 4 <br>
-                    👥 Required Members: <strong id="requiredMembers">3</strong>
-                </p>
-            </div>
-
-        </div>
-
-        <button class="btn btn-success mt-3" onclick="addRide()">Post Ride</button>
-    </div>
-</div>
-
-<!-- ==============Current Rides ================ -->
- <div id="current" style="display:none;">
-    <div class="card p-3 shadow-sm">
-        <h5>Current Rides 🚕</h5>
-        <ul id="currentList" class="list-group"></ul>
-    </div>
-</div>
-
-<!-- ================= SUGGESTIONS ================= -->
-
-<div id="suggestions" style="display:none;">
-    <div class="card p-3 shadow-sm">
-        <h5>Ride Suggestions</h5>
-
-        <div class="table-responsive">
-            <table class="table table-bordered text-center mt-2">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Start</th>
-                        <th>Destination</th>
-                        <th>Your Time</th>
-                        <th>Your Members</th>
-                        <th>Their Members</th>
-                        <th>Total</th>
-                        <th>Their Time</th>
-                        <th>Remarks</th>
-                        <th>% Match</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-
-                <tbody id="results">
-                    <tr>
-                        <td colspan="9">No matches yet</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<!-- ================= INVITES ================= -->
-
-<div id="invites" style="display:none;">
-    <div class="card p-3 shadow-sm">
-        <h5>Invitations</h5>
-        <ul id="inviteList" class="list-group"></ul>
-    </div>
-</div>
-
-<!-- ================= FRIENDS ================= -->
-
-<div id="friends" style="display:none;">
-    <div class="row">
-
-        <div class="col-md-4">
-            <div class="card p-3 shadow-sm">
-                <h5>Friends</h5>
-                <ul id="friendsList" class="list-group"></ul>
-            </div>
-        </div>
-
-        <div class="col-md-8 mt-3 mt-md-0">
-            <div class="card p-3 shadow-sm">
-                <h5 id="chatTitle">Select a friend</h5>
-
-                <div id="chatBox" style="height:250px; overflow-y:auto;"></div>
-
-                <div class="d-flex mt-2">
-                    <input id="chatInput" class="form-control me-2">
-                    <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                <div class="mt-3 p-3 bg-light rounded">
+                    <i class="fa fa-taxi text-warning me-1"></i>
+                    Rickshaw capacity: <strong>4</strong> &nbsp;|&nbsp;
+                    You + <strong id="addedCount">0</strong> companion(s) &nbsp;|&nbsp;
+                    Still need: <strong id="requiredMembers">3</strong> more
                 </div>
             </div>
         </div>
 
+        <button class="btn btn-success mt-4 px-4" onclick="addRide()">
+            <i class="fa fa-paper-plane me-2"></i>Post Ride
+        </button>
+    </div>
+</div>
+
+<!-- ================= CURRENT RIDES ================= -->
+<div id="current" style="display:none;">
+    <div class="card p-4 shadow-sm">
+        <h4><i class="fa fa-car text-primary me-2"></i>Current Rides</h4>
+        <div id="currentList" class="mt-3"></div>
+    </div>
+</div>
+
+<!-- ================= SUGGESTIONS ================= -->
+<div id="suggestions" style="display:none;">
+    <div class="card p-4 shadow-sm">
+        <h4><i class="fa fa-lightbulb text-warning me-2"></i>Ride Suggestions</h4>
+        <p class="text-muted" style="font-size:13px;">Friends and mutual friends are shown first. Combined members must not exceed 4.</p>
+        <div id="suggestionsList" class="mt-3"></div>
+    </div>
+</div>
+
+<!-- ================= RIDE REQUESTS ================= -->
+<div id="requests" style="display:none;">
+    <div class="card p-4 shadow-sm">
+        <h4><i class="fa fa-paper-plane text-success me-2"></i>Ride Requests</h4>
+        <div id="requestsList" class="mt-3"></div>
+    </div>
+</div>
+
+<!-- ================= FRIENDS ================= -->
+<div id="friends" style="display:none;">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card p-3 shadow-sm h-100">
+                <h5><i class="fa fa-users text-primary me-2"></i>Friends</h5>
+                <ul id="friendsList" class="list-group list-group-flush mt-2"></ul>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card p-3 shadow-sm h-100">
+                <h5 id="chatTitle"><i class="fa fa-comment me-2"></i>Select a friend to chat</h5>
+                <div id="chatBox" class="chat-box border rounded p-3 mt-2"></div>
+                <div class="d-flex mt-2 gap-2">
+                    <input id="chatInput" class="form-control" placeholder="Type a message...">
+                    <button class="btn btn-primary" onclick="sendMessage()">
+                        <i class="fa fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- ================= PROFILE ================= -->
-
 <div id="profile" style="display:none;">
-    <div class="card p-3 shadow-sm">
-        <h5>My Profile</h5>
-        <p><strong>Name:</strong> <span id="profileName"></span></p>
-        <p><strong>Email:</strong> <span id="profileEmail"></span></p>
-        <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
+    <div class="card p-4 shadow-sm">
+        <h4><i class="fa fa-user text-primary me-2"></i>My Profile</h4>
+        <div class="mt-3">
+            <p><strong>Name:</strong> <span id="profileName"></span></p>
+            <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+            <p>
+                <strong>Phone:</strong> <span id="profilePhone"></span>
+                <button class="btn btn-sm btn-outline-secondary ms-2" onclick="askPhoneNumber()">
+                    <i class="fa fa-edit me-1"></i>Update
+                </button>
+            </p>
+        </div>
     </div>
 </div>
 
 <!-- ================= HISTORY ================= -->
-
 <div id="history" style="display:none;">
-    <div class="card p-3 shadow-sm">
-        <h5>My Ride History</h5>
-        <ul id="historyList" class="list-group"></ul>
+    <div class="card p-4 shadow-sm">
+        <h4><i class="fa fa-history text-secondary me-2"></i>Ride History</h4>
+        <div id="historyList" class="mt-3"></div>
     </div>
 </div>
 
-</div>
+</div><!-- /container -->
+</div><!-- /app -->
+
+<!-- Toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="appToast" class="toast align-items-center text-white border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMsg"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
 </div>
 
-<script>
-function googleLogout() {
-    if (window.google && google.accounts) {
-        google.accounts.id.disableAutoSelect();
-    }
-}
-</script>
-
-<!-- Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Your JS -->
 <script src="script.js"></script>
-
 </body>
 </html>
