@@ -186,9 +186,18 @@ body {
     }
 
     .notification-dropdown {
-        width: 280px;
-        right: -60px;
-    }
+    position: absolute;
+    right: 0;
+    top: 40px;
+    width: 350px;
+    background: white;
+    border-radius: 12px;
+    z-index: 9999;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
 
     .chat-box {
         height: 220px;
