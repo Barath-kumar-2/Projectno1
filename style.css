@@ -185,10 +185,10 @@ body {
         padding: 16px !important;
     }
 
-    .notification-dropdown {
-    position: absolute;
-    right: 0;
-    top: 40px;
+.notification-dropdown {
+    position: fixed;
+    top: 60px;
+    right: 20px;
     width: 350px;
     background: white;
     border-radius: 12px;
