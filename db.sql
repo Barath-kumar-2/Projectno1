@@ -1,8 +1,6 @@
--- ================= DATABASE =================
 CREATE DATABASE IF NOT EXISTS rickmate;
 USE rickmate;
 
--- ================= USERS =================
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
@@ -12,57 +10,43 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ================= RIDES =================
 CREATE TABLE IF NOT EXISTS rides (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     start_location VARCHAR(100) NOT NULL,
     destination VARCHAR(100) NOT NULL,
 
-    -- Fix #8: Store as DATETIME (server-side UTC or local, consistent)
     ride_datetime DATETIME NOT NULL,
 
-    -- Fix #5: Strictness is enforced in matching logic
-    -- high   = must match exact same hour
-    -- medium = within ±1 hour
-    -- low    = any time on the same day
     strictness ENUM('low','medium','high') DEFAULT 'medium',
 
     status ENUM('active','completed','cancelled') DEFAULT 'active',
 
-    -- Fix #9: current_members enforced max 4
     current_members INT DEFAULT 1,
     members_required INT DEFAULT 3,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    -- Constraints
     CONSTRAINT chk_max_members CHECK (current_members <= 4),
     CONSTRAINT chk_min_members CHECK (current_members >= 1),
     CONSTRAINT chk_required_members CHECK (members_required BETWEEN 0 AND 3),
 
-    -- Fix #4: Server-side guard — ride must be in the future at insert time
-    -- (actual enforcement done in application layer since SQL CHECK on NOW() 
-    --  varies by engine; the app rejects past rides before INSERT)
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- ================= RIDE MEMBERS =================
 CREATE TABLE IF NOT EXISTS ride_members (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ride_id INT NOT NULL,
     user_id INT NOT NULL,
     joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    -- Fix #1: Deduplication at DB level
     UNIQUE KEY unique_member (ride_id, user_id),
 
     FOREIGN KEY (ride_id) REFERENCES rides(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- ================= TEAM MEMBERS =================
 CREATE TABLE IF NOT EXISTS team_members (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ride_id INT NOT NULL,
@@ -73,12 +57,9 @@ CREATE TABLE IF NOT EXISTS team_members (
     FOREIGN KEY (ride_id) REFERENCES rides(id) ON DELETE CASCADE
 );
 
--- ================= INDEX FOR MATCHING =================
--- Fix #6: Index now also covers status so filtering active+future rides is fast
 CREATE INDEX IF NOT EXISTS idx_rides_match
     ON rides (start_location, destination, ride_datetime, status);
 
--- ================= INVITATIONS =================
 CREATE TABLE IF NOT EXISTS invitations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     sender_id INT NOT NULL,
@@ -86,28 +67,24 @@ CREATE TABLE IF NOT EXISTS invitations (
     status ENUM('pending', 'accepted', 'rejected') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    -- Prevent duplicate invites
     UNIQUE KEY unique_invite (sender_id, receiver_id),
 
     FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- ================= FRIENDS =================
 CREATE TABLE IF NOT EXISTS friends (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user1_id INT NOT NULL,
     user2_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    -- Fix #2: Unique so no duplicate friendships
     UNIQUE KEY unique_friend (user1_id, user2_id),
 
     FOREIGN KEY (user1_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (user2_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- ================= MESSAGES =================
 CREATE TABLE IF NOT EXISTS messages (
     id INT AUTO_INCREMENT PRIMARY KEY,
     sender_id INT NOT NULL,
@@ -118,7 +95,6 @@ CREATE TABLE IF NOT EXISTS messages (
     FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- ================= RATINGS =================
 CREATE TABLE IF NOT EXISTS ratings (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ride_id INT NOT NULL,
@@ -132,7 +108,6 @@ CREATE TABLE IF NOT EXISTS ratings (
     FOREIGN KEY (reviewee_id)  REFERENCES users(id) ON DELETE CASCADE
 );
 
--- ================= DEBUG =================
 SELECT * FROM users;
 SELECT * FROM rides;
 SELECT * FROM ride_members;
